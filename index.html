@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Objednávka stravy — OPEN 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:       #2D6A4F;
+    --green-light: #52B788;
+    --green-pale:  #D8F3DC;
+    --blue:        #1565C0;
+    --blue-pale:   #DBEAFE;
+    --red:         #C1121F;
+    --red-pale:    #FFE4E6;
+    --bg:          #F0F2F0;
+    --card:        #FFFFFF;
+    --text:        #1B2024;
+    --muted:       #6B7280;
+    --border:      #D1D5DB;
+    --radius:      12px;
+    --shadow:      0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  header {
+    background: var(--green);
+    color: #fff;
+    padding: 32px 20px 28px;
+    text-align: center;
+  }
+  header .eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .75;
+    margin-bottom: 8px;
+  }
+  header h1 {
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  header p {
+    font-size: 14px;
+    opacity: .85;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 32px 0 12px;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+
+  /* Ceny info */
+  .ceny-info {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .cena-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--green-pale);
+    color: var(--green);
+  }
+
+  /* Průběžná cena */
+  .cena-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--green);
+    color: #fff;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 -2px 12px rgba(0,0,0,.15);
+    z-index: 100;
+  }
+  .cena-bar-label { font-size: 13px; opacity: .85; }
+  .cena-bar-value { font-size: 20px; font-weight: 800; }
+
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--text);
+  }
+  label .req { color: var(--red); margin-left: 2px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+    background: #fff;
+    transition: border-color .15s;
+    appearance: none;
+  }
+  input:focus { outline: none; border-color: var(--green-light); }
+  input.error { border-color: var(--red); background: var(--red-pale); }
+
+  .error-msg {
+    font-size: 12px;
+    color: var(--red);
+    font-weight: 600;
+    margin-top: 4px;
+    display: none;
+  }
+  .error-msg.visible { display: block; }
+
+  /* Porce */
+  .porce-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .porce-option { position: relative; }
+  .porce-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .porce-option label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    text-align: center;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    gap: 3px;
+  }
+  .porce-option label .porce-icon { font-size: 22px; }
+  .porce-option label .porce-sub  { font-size: 11px; font-weight: 400; color: var(--muted); }
+  .porce-option label .porce-price { font-size: 13px; font-weight: 700; color: var(--green); }
+  .porce-option input:checked + label {
+    border-color: var(--green);
+    background: var(--green-pale);
+    color: var(--green);
+  }
+  .porce-option input:disabled + label {
+    opacity: .4;
+    cursor: not-allowed;
+    border-color: var(--border);
+    background: #f9f9f9;
+  }
+  .porce-notice {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    line-height: 1.4;
+    display: none;
+  }
+  .porce-notice.visible { display: block; }
+
+  /* Den karta */
+  .day-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .day-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+    gap: 10px;
+  }
+  .day-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background .2s;
+  }
+  .day-card.has-selection .day-dot { background: var(--green-light); }
+  .day-name  { font-size: 15px; font-weight: 700; }
+  .day-date  { font-size: 12px; color: var(--muted); font-weight: 400; }
+  .day-summary {
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 600;
+    text-align: right;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .day-chevron {
+    color: var(--muted);
+    font-size: 18px;
+    transition: transform .2s;
+    flex-shrink: 0;
+  }
+  .day-card.open .day-chevron { transform: rotate(180deg); }
+  .day-body { display: none; padding: 0 18px 18px; }
+  .day-card.open .day-body { display: block; }
+
+  /* Meal slot */
+  .meal-slot {
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .meal-slot:last-child { margin-bottom: 0; }
+  .meal-slot.vecere { background: var(--green-pale); }
+  .meal-slot.obed   { background: var(--blue-pale); }
+
+  .meal-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .meal-slot.vecere .meal-label { color: var(--green); }
+  .meal-slot.obed   .meal-label { color: var(--blue); }
+
+  .meal-options { display: flex; flex-direction: column; gap: 7px; }
+
+  .meal-option { position: relative; }
+  .meal-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .meal-option label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1.5px solid rgba(0,0,0,.1);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    background: rgba(255,255,255,.6);
+    transition: border-color .15s, background .15s;
+    margin: 0;
+    line-height: 1.35;
+  }
+  .meal-option input:checked + label { background: rgba(255,255,255,.95); border-color: var(--green); }
+  .meal-slot.obed .meal-option input:checked + label { border-color: var(--blue); }
+
+  .meal-num {
+    font-size: 12px;
+    font-weight: 800;
+    background: rgba(0,0,0,.1);
+    border-radius: 4px;
+    padding: 1px 6px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .meal-option-none label {
+    color: var(--muted);
+    font-weight: 400;
+    background: transparent;
+    border-color: transparent;
+    font-size: 12px;
+  }
+  .meal-option-none input:checked + label { border-color: transparent; background: transparent; }
+
+  /* Polévka */
+  .polevka-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,.7);
+    border-radius: 8px;
+    border: 1.5px solid rgba(0,0,0,.08);
+    transition: opacity .2s;
+  }
+  .polevka-row.disabled { opacity: .4; pointer-events: none; }
+  .polevka-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .polevka-row label {
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 0;
+    line-height: 1.3;
+  }
+  .polevka-row .polevka-price {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* Submit */
+  .submit-area { margin-top: 28px; }
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+  }
+  .submit-btn:hover { background: #235A41; }
+  .submit-btn:active { transform: scale(.98); }
+  .submit-btn:disabled { background: var(--muted); cursor: not-allowed; }
+
+  .message-box {
+    display: none;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-top: 16px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .message-box.success    { background: var(--green-pale); color: var(--green); }
+  .message-box.error-box  { background: var(--red-pale);   color: var(--red);   }
+  .message-box.visible    { display: block; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 400px) { .field-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Výběr stravy</div>
+  <h1>OPEN 2026</h1>
+  <p>Sobota 27. 6. 2026 – Neděle 5. 7. 2026 &nbsp;·&nbsp; Objednávku lze změnit do 1. 6. 2026</p>
+</header>
+
+<div class="container">
+
+  <div class="section-title">Osobní údaje</div>
+  <div class="card">
+    <div class="field-row">
+      <div class="field">
+        <label for="jmeno">Křestní jméno <span class="req">*</span></label>
+        <input type="text" id="jmeno" placeholder="Jana">
+        <div class="error-msg" id="err-jmeno">Vyplňte křestní jméno.</div>
+      </div>
+      <div class="field">
+        <label for="prijmeni">Příjmení <span class="req">*</span></label>
+        <input type="text" id="prijmeni" placeholder="Nováková">
+        <div class="error-msg" id="err-prijmeni">Vyplňte příjmení.</div>
+      </div>
+    </div>
+    <div class="field">
+      <label for="email">E-mail <span class="req">*</span></label>
+      <input type="email" id="email" placeholder="jana@example.cz">
+      <div class="error-msg" id="err-email">Zadejte platnou e-mailovou adresu.</div>
+    </div>
+    <div class="field">
+      <label for="rok">Rok narození <span class="req">*</span></label>
+      <input type="number" id="rok" placeholder="2000" min="1930" max="2025">
+      <div class="error-msg" id="err-rok">Zadejte platný rok narození (1930–2025).</div>
+    </div>
+  </div>
+
+  <div class="section-title">Velikost porce</div>
+  <div class="card">
+    <div class="field">
+      <div class="ceny-info" style="margin-bottom:12px">
+        <span class="cena-badge">Dospělá porce: 165 Kč / jídlo</span>
+        <span class="cena-badge">Dětská porce: 130 Kč / jídlo</span>
+        <span class="cena-badge">Polévka: +20 Kč</span>
+      </div>
+      <label>Typ porce <span class="req">*</span></label>
+      <div class="porce-group">
+        <div class="porce-option">
+          <input type="radio" name="porce" id="porce-dospela" value="dospela" onchange="aktualizujCenu()">
+          <label for="porce-dospela">
+            <span class="porce-icon">🧑</span>
+            Dospělá
+            <span class="porce-sub">od 13 let</span>
+            <span class="porce-price">165 Kč</span>
+          </label>
+        </div>
+        <div class="porce-option">
+          <input type="radio" name="porce" id="porce-detska" value="detska" disabled onchange="aktualizujCenu()">
+          <label for="porce-detska">
+            <span class="porce-icon">🧒</span>
+            Dětská
+            <span class="porce-sub">do 12 let</span>
+            <span class="porce-price">130 Kč</span>
+          </label>
+        </div>
+      </div>
+      <div class="porce-notice" id="porce-notice"></div>
+      <div class="error-msg" id="err-porce">Zvolte velikost porce.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Objednávka jídel <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">— volitelné pro každý den</span></div>
+  <div id="dny-container"></div>
+
+  <div class="submit-area">
+    <button class="submit-btn" id="submit-btn" type="button" onclick="odeslat()">
+      Odeslat objednávku
+    </button>
+    <div class="message-box success" id="msg-success">
+      ✅ Objednávka byla úspěšně odeslána. Děkujeme!<br>
+      <span style="font-weight:400;font-size:13px">Rekapitulace s cenou přijde na zadaný e-mail.</span>
+    </div>
+    <div class="message-box error-box" id="msg-error">
+      ❌ Při odesílání nastala chyba. Zkuste to prosím znovu.
+    </div>
+  </div>
+
+</div>
+
+<!-- Průběžná cena -->
+<div class="cena-bar" id="cena-bar" style="display:none">
+  <span class="cena-bar-label">Předběžná cena</span>
+  <span class="cena-bar-value" id="cena-bar-value">0 Kč</span>
+</div>
+
+<script>
+// ── Konstanty ─────────────────────────────────────────────────────────────
+const CENA_DOSPELA = 165;
+const CENA_DETSKA  = 130;
+const CENA_POLEVKA = 20;
+
+const POLEVKA_TEXT = "Slepičí vývar s drobením a zeleninou, 0,3 l";
+
+// ── Data jídel ─────────────────────────────────────────────────────────────
+const DNY = [
+  {
+    id: "sob27", nazev: "Sobota", datum: "27.6.",
+    vecere: [
+      "Kuřecí nudličky Čína, dušená rýže, 120g/300g",
+      "Rybí Fish & Chips, brambory, tatarka, 120g/300g",
+      "Kuřecí stripsy na zeleninovém salátu s dresinkem, opečené bramborové klíny"
+    ],
+    obed: null
+  },
+  {
+    id: "ned28", nazev: "Neděle", datum: "28.6.",
+    vecere: [
+      "Svíčková na smetaně, houskový knedlík, brusinky, šlehačka",
+      "Uzené maso, bramborový knedlík, zelí",
+      "Zeleninová čína s tofu, dušená rýže"
+    ],
+    obed: [
+      "Kuřecí řízek, bramborový salát",
+      "Smažený sýr, bramborový salát, tatarka",
+      "Zeleninový výběr, vařené brambory s máslem"
+    ]
+  },
+  {
+    id: "pon29", nazev: "Pondělí", datum: "29.6.",
+    vecere: [
+      "Segedínský guláš, houskový knedlík",
+      "Pečená kuřecí stehna, vařené brambory, salát",
+      "Čočka na kyselo, vejce, okurka"
+    ],
+    obed: [
+      "Svíčková na smetaně, houskový knedlík",
+      "Kuřecí steak s bylinkovým máslem, hranolky",
+      "Pasta primavera se zeleninou a parmazánem"
+    ]
+  },
+  {
+    id: "ute30", nazev: "Úterý", datum: "30.6.",
+    vecere: [
+      "Pečené vepřové koleno, bramborová kaše, hořčice",
+      "Grilovaný losos, vařené brambory, salát",
+      "Plněné papriky, rajčatová omáčka, rýže"
+    ],
+    obed: [
+      "Špenátové tagliatelle, parmazán",
+      "Kuřecí curry, basmati rýže",
+      "Hamburger s hranolkami a salátem"
+    ]
+  },
+  {
+    id: "str1", nazev: "Středa", datum: "1.7.",
+    vecere: [
+      "Svíčkový steak, opečené brambory, grilovaná zelenina",
+      "Kuřecí tikka masala, rýže, naan",
+      "Zeleninový guláš, chléb"
+    ],
+    obed: [
+      "Smažená kuřecí křídla, coleslaw, hranolky",
+      "Vepřová panenka, houskový knedlík, omáčka",
+      "Quinoa bowl se zeleninou a hummussem"
+    ]
+  },
+  {
+    id: "ctv2", nazev: "Čtvrtek", datum: "2.7.",
+    vecere: [
+      "Grilovaná kuřecí prsa, pečené brambory, grilovaná zelenina",
+      "Vepřový řízek přírodní, bramborová kaše",
+      "Ratatouille, čerstvý chléb"
+    ],
+    obed: [
+      "Hovězí vývar s nudlemi a zeleninou",
+      "Fazolový hrnec s klobásou, chléb",
+      "Cizrnový salát s olivami a fetou"
+    ]
+  },
+  {
+    id: "pat3", nazev: "Pátek", datum: "3.7.",
+    vecere: [
+      "Pečené kuře s česnekem, opečené brambory",
+      "Makrely na grilu, bramborový salát",
+      "Zeleninová pizza"
+    ],
+    obed: [
+      "Masové koule v rajčatové omáčce, těstoviny",
+      "Grilovaný losos, basmati rýže",
+      "Sýrové rizoto s hříbky"
+    ]
+  },
+  {
+    id: "sob4", nazev: "Sobota", datum: "4.7.",
+    vecere: [
+      "Vepřová žebra BBQ, coleslaw, hranolky",
+      "Zapečená kuřecí prsa s mozzarellou, těstoviny",
+      "Plněné papriky s rýží a fetou"
+    ],
+    obed: [
+      "Svíčková na smetaně, houskový knedlík, brusinky",
+      "Kuřecí gyros, tzatziki, pita",
+      "Zeleninová čína s tofu, rýže"
+    ]
+  },
+  {
+    id: "ned5", nazev: "Neděle", datum: "5.7.",
+    vecere: null,
+    obed: [
+      "Vepřová pečeně, svíčková omáčka, houskový knedlík",
+      "Kuřecí řízek, bramborový salát",
+      "Zeleninový výběr s vařenou rýží"
+    ]
+  }
+];
+
+// ── Sestavení formuláře ────────────────────────────────────────────────────
+function sestavFormular() {
+  const kontejner = document.getElementById("dny-container");
+  DNY.forEach(den => {
+    const karta = document.createElement("div");
+    karta.className = "day-card";
+    karta.id = `den-${den.id}`;
+    karta.innerHTML = `
+      <div class="day-header" onclick="toggleDen('${den.id}')">
+        <div class="day-dot" id="dot-${den.id}"></div>
+        <div style="margin-right:8px">
+          <div class="day-name">${den.nazev}</div>
+          <div class="day-date">${den.datum}</div>
+        </div>
+        <div class="day-summary" id="summary-${den.id}"></div>
+        <div class="day-chevron">⌄</div>
+      </div>
+      <div class="day-body" id="body-${den.id}">
+        ${den.vecere ? sestavMealSlot(den.id, "vecere", den.vecere) : ""}
+        ${den.obed   ? sestavMealSlot(den.id, "obed",   den.obed)  : ""}
+      </div>
+    `;
+    kontejner.appendChild(karta);
+  });
+}
+
+function sestavMealSlot(denId, typ, jidla) {
+  const nazev    = typ === "vecere" ? "Večeře" : "Oběd";
+  const jidlaHtml = jidla.map((j, i) => `
+    <div class="meal-option">
+      <input type="radio" name="${denId}_${typ}" id="${denId}_${typ}_${i+1}"
+             value="${i+1}" onchange="onJidloChange('${denId}','${typ}')">
+      <label for="${denId}_${typ}_${i+1}">
+        <span class="meal-num">${i+1}</span>${j}
+      </label>
+    </div>
+  `).join("");
+
+  const noneHtml = `
+    <div class="meal-option meal-option-none">
+      <input type="radio" name="${denId}_${typ}" id="${denId}_${typ}_none"
+             value="" checked onchange="onJidloChange('${denId}','${typ}')">
+      <label for="${denId}_${typ}_none">Nevybráno</label>
+    </div>
+  `;
+
+  const polevkaHtml = typ === "obed" ? `
+    <div class="polevka-row disabled" id="polevka-row-${denId}">
+      <input type="checkbox" id="polevka_${denId}" name="polevka_${denId}"
+             onchange="aktualizujCenu()">
+      <label for="polevka_${denId}">${POLEVKA_TEXT}</label>
+      <span class="polevka-price">+${CENA_POLEVKA} Kč</span>
+    </div>
+  ` : "";
+
+  return `
+    <div class="meal-slot ${typ}">
+      <div class="meal-label">${nazev}</div>
+      <div class="meal-options">${jidlaHtml}${noneHtml}</div>
+      ${polevkaHtml}
+    </div>
+  `;
+}
+
+// ── Interakce ─────────────────────────────────────────────────────────────
+function toggleDen(id) {
+  document.getElementById(`den-${id}`).classList.toggle("open");
+}
+
+function onJidloChange(denId, typ) {
+  if (typ === "obed") aktualizujPolevku(denId);
+  aktualizujShrnutiDne(denId);
+  aktualizujCenu();
+}
+
+function aktualizujPolevku(denId) {
+  const row = document.getElementById(`polevka-row-${denId}`);
+  if (!row) return;
+  const vybrano = document.querySelector(`input[name="${denId}_obed"]:checked`);
+  const maJidlo = vybrano && vybrano.value !== "";
+  row.classList.toggle("disabled", !maJidlo);
+  if (!maJidlo) document.getElementById(`polevka_${denId}`).checked = false;
+}
+
+function aktualizujShrnutiDne(denId) {
+  const den    = DNY.find(d => d.id === denId);
+  const karta  = document.getElementById(`den-${denId}`);
+  const summary = document.getElementById(`summary-${denId}`);
+  const casti  = [];
+  if (den.vecere) {
+    const v = document.querySelector(`input[name="${denId}_vecere"]:checked`);
+    if (v && v.value) casti.push(`Večeře: ${v.value}`);
+  }
+  if (den.obed) {
+    const o = document.querySelector(`input[name="${denId}_obed"]:checked`);
+    if (o && o.value) {
+      const pol = document.getElementById(`polevka_${denId}`);
+      casti.push(`Oběd: ${o.value}${pol && pol.checked ? "P" : ""}`);
+    }
+  }
+  summary.textContent = casti.join("  ·  ");
+  karta.classList.toggle("has-selection", casti.length > 0);
+}
+
+// ── Průběžná cena ──────────────────────────────────────────────────────────
+function spoctiCenu() {
+  const porceEl = document.querySelector("input[name='porce']:checked");
+  if (!porceEl) return 0;
+  const cenaPorce = porceEl.value === "detska" ? CENA_DETSKA : CENA_DOSPELA;
+  let total = 0;
+  DNY.forEach(den => {
+    if (den.vecere) {
+      const v = document.querySelector(`input[name="${den.id}_vecere"]:checked`);
+      if (v && v.value) total += cenaPorce;
+    }
+    if (den.obed) {
+      const o = document.querySelector(`input[name="${den.id}_obed"]:checked`);
+      if (o && o.value) {
+        total += cenaPorce;
+        const pol = document.getElementById(`polevka_${den.id}`);
+        if (pol && pol.checked) total += CENA_POLEVKA;
+      }
+    }
+  });
+  return total;
+}
+
+function aktualizujCenu() {
+  const total = spoctiCenu();
+  const bar   = document.getElementById("cena-bar");
+  const val   = document.getElementById("cena-bar-value");
+  val.textContent = `${total} Kč`;
+  bar.style.display = total > 0 ? "flex" : "none";
+}
+
+// ── Porce + rok ────────────────────────────────────────────────────────────
+document.getElementById("rok").addEventListener("input", function () {
+  const rok = parseInt(this.value, 10);
+  const jeValidni = rok >= 1930 && rok <= 2026;
+  const radioDospela = document.getElementById("porce-dospela");
+  const radioDetska  = document.getElementById("porce-detska");
+  const notice       = document.getElementById("porce-notice");
+
+  // Dětská porce: nar. 2014 a novější = v roce 2026 mladší 13 let
+  const detskaMozna = jeValidni && rok >= 2014;
+
+  radioDetska.disabled = !detskaMozna;
+  if (!detskaMozna && radioDetska.checked) radioDospela.checked = true;
+
+  if (!jeValidni || !this.value) {
+    notice.textContent = "";
+    notice.classList.remove("visible");
+  } else if (detskaMozna) {
+    notice.textContent = `Rok ${rok} — dětská i dospělá porce jsou dostupné.`;
+    notice.classList.add("visible");
+  } else {
+    notice.textContent = `Rok ${rok} — dostupná pouze dospělá porce (165 Kč / jídlo).`;
+    notice.classList.add("visible");
+  }
+  aktualizujCenu();
+});
+
+// ── Validace ───────────────────────────────────────────────────────────────
+function zobrazChybu(inputId, errId, zobrazit) {
+  document.getElementById(inputId)?.classList.toggle("error", zobrazit);
+  document.getElementById(errId)?.classList.toggle("visible", zobrazit);
+  return zobrazit;
+}
+
+function validuj() {
+  let chyba = false;
+  const jmeno    = document.getElementById("jmeno").value.trim();
+  const prijmeni = document.getElementById("prijmeni").value.trim();
+  const email    = document.getElementById("email").value.trim();
+  const rok      = parseInt(document.getElementById("rok").value, 10);
+  const porce    = document.querySelector("input[name='porce']:checked");
+
+  if (zobrazChybu("jmeno",    "err-jmeno",    !jmeno))    chyba = true;
+  if (zobrazChybu("prijmeni", "err-prijmeni", !prijmeni)) chyba = true;
+  if (zobrazChybu("email",    "err-email",    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) chyba = true;
+  if (zobrazChybu("rok",      "err-rok",      !(rok >= 1930 && rok <= 2026)))             chyba = true;
+
+  const errPorce = document.getElementById("err-porce");
+  errPorce.classList.toggle("visible", !porce);
+  if (!porce) chyba = true;
+
+  return !chyba;
+}
+
+// ── Odeslání ───────────────────────────────────────────────────────────────
+async function odeslat() {
+  if (!validuj()) {
+    document.querySelector(".error-msg.visible")
+      ?.closest(".card, .submit-area")
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  const porceEl = document.querySelector("input[name='porce']:checked");
+  const data = {
+    jmeno:    document.getElementById("jmeno").value.trim(),
+    prijmeni: document.getElementById("prijmeni").value.trim(),
+    email:    document.getElementById("email").value.trim(),
+    rok:      document.getElementById("rok").value,
+    porce:    porceEl.value,
+    cena:     spoctiCenu(),
+  };
+
+  DNY.forEach(den => {
+    if (den.vecere) {
+      const v = document.querySelector(`input[name="${den.id}_vecere"]:checked`);
+      data[`vecere_${den.datum}`] = v?.value || "";
+    }
+    if (den.obed) {
+      const o = document.querySelector(`input[name="${den.id}_obed"]:checked`);
+      const p = document.getElementById(`polevka_${den.id}`);
+      data[`obed_${den.datum}`] = o?.value ? (o.value + (p?.checked ? "P" : "")) : "";
+    }
+  });
+
+  const btn = document.getElementById("submit-btn");
+  btn.disabled = true;
+  btn.textContent = "Odesílám…";
+
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzljFaVrKEKIDazdmd9V-HzT5h4k6g5NvQK2efS-BoG2c7GNhYySYLvdSj9TQo5RaN9/exec";
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(data)
+    });
+    document.getElementById("msg-success").classList.add("visible");
+    document.getElementById("msg-error").classList.remove("visible");
+    document.getElementById("cena-bar").style.display = "none";
+    btn.style.display = "none";
+  } catch (e) {
+    document.getElementById("msg-error").classList.add("visible");
+    btn.disabled = false;
+    btn.textContent = "Odeslat objednávku";
+  }
+}
+
+sestavFormular();
+</script>
+</body>
+</html>

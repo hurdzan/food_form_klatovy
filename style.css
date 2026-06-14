@@ -295,8 +295,31 @@ input.error { border-color: var(--red); background: var(--red-pale); }
   margin: 0;
   line-height: 1.35;
 }
-.meal-option input:checked + label { background: rgba(255,255,255,.95); border-color: var(--green); }
-.meal-slot.obed .meal-option input:checked + label { border-color: var(--blue); }
+
+/* Společné pro oběd i večeři při vybrání */
+.meal-option input:checked + label { 
+  background: #ffffff; 
+  border-color: var(--green);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08); /* Jemný stín pro zvýraznění */
+}
+
+/* Specifické barvy rámečku a čísla pro vybranou večeři */
+.meal-slot.vecere .meal-option input:checked + label { 
+  border-color: var(--green); 
+}
+.meal-slot.vecere .meal-option input:checked + label .meal-num {
+  background: var(--green-pale);
+  color: var(--green);
+}
+
+/* Specifické barvy rámečku a čísla pro vybraný oběd */
+.meal-slot.obed .meal-option input:checked + label { 
+  border-color: var(--blue); 
+}
+.meal-slot.obed .meal-option input:checked + label .meal-num {
+  background: var(--blue-pale);
+  color: var(--blue);
+}
 
 .meal-num {
   font-size: 12px;
@@ -315,6 +338,19 @@ input.error { border-color: var(--red); background: var(--red-pale); }
   font-size: 12px;
 }
 .meal-option-none input:checked + label { border-color: transparent; background: transparent; }
+
+
+/* Pokud je vybrané nějaké jídlo (1, 2 nebo 3), vyblednou POUZE ostatní běžná jídla.
+   Možnost "Nevybráno" (.meal-option-none) zůstane stoprocentně viditelná a neztratí barvu! */
+.meal-options:has(input:not(#id):checked:not([value=""])) .meal-option:not(.meal-option-none):has(input:not(:checked)) {
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+/* Zajištění, že Nevybráno bude mít vždy plnou opacitu a lidi ho nepřehlédnou */
+.meal-option-none {
+  opacity: 1 !important;
+}
 
 /* ── Polévka ── */
 .polevka-row {

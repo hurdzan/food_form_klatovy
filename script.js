@@ -272,14 +272,6 @@ function aktualizujCenu() {
 // ── Porce + rok ─────────────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
-  const rokInput = document.getElementById("rok");
-
-  rokInput.addEventListener("focus", () => {
-  if (rokInput.value === "") {
-      rokInput.value = 2000;
-      rokInput.setSelectionRange(0, rokInput.value.length);
-  }
-});
   document.getElementById("rok").addEventListener("input", function () {
     const rok          = parseInt(this.value, 10);
     const jeValidni    = rok >= 1920 && rok <= 2026;

@@ -155,18 +155,20 @@ function sestavMealSlot(denId, typ, jidla) {
   const jidlaHtml = jidla.map((j, i) => `
     <div class="meal-option">
       <input type="radio" name="${denId}_${typ}" id="${denId}_${typ}_${i + 1}"
-             value="${i + 1}" onchange="onJidloChange('${denId}','${typ}')">
-      <label for="${denId}_${typ}_${i + 1}">
+             value="${i + 1}"
+             onchange="onJidloChange('${denId}','${typ}')">
+      <label for="${denId}_${typ}_${i + 1}"
+             onclick="toggleJidloLabel(event, '${denId}','${typ}',${i + 1})">
         <span class="meal-num">${i + 1}</span>${j}
       </label>
     </div>
   `).join("");
 
+  // Skrytý "none" radio — drží stav "nic nevybráno", není vidět v UI
   const noneHtml = `
-    <div class="meal-option meal-option-none">
+    <div style="display:none">
       <input type="radio" name="${denId}_${typ}" id="${denId}_${typ}_none"
              value="" checked onchange="onJidloChange('${denId}','${typ}')">
-      <label for="${denId}_${typ}_none">Nevybráno</label>
     </div>
   `;
 
@@ -191,6 +193,28 @@ function sestavMealSlot(denId, typ, jidla) {
 // ── Interakce ───────────────────────────────────────────────────────────────
 
 
+
+function toggleJidloLabel(e, denId, typ, idx) {
+  // V okamžiku click eventu na label už prohlížeč radio přepnul na checked.
+  // Pokud jsme ale předtím uložili, že toto radio už bylo checked (před klikem),
+  // znamená to opakované kliknutí → odhlásíme.
+  const radio = document.getElementById(`${denId}_${typ}_${idx}`);
+  if (radio.dataset.wasChecked === "true") {
+    e.preventDefault();
+    radio.checked = false;
+    radio.dataset.wasChecked = "false";
+    const noneRadio = document.getElementById(`${denId}_${typ}_none`);
+    noneRadio.checked = true;
+    onJidloChange(denId, typ);
+  } else {
+    radio.dataset.wasChecked = "true";
+    // Odstraníme příznak u ostatních rádií ve skupině
+    document.querySelectorAll(`input[name="${denId}_${typ}"]`).forEach(r => {
+      if (r !== radio) r.dataset.wasChecked = "false";
+    });
+    onJidloChange(denId, typ);
+  }
+}
 
 function toggleDen(id) {
   document.getElementById(`den-${id}`).classList.toggle("open");
@@ -272,7 +296,11 @@ function aktualizujCenu() {
 // ── Porce + rok ─────────────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("rok").addEventListener("input", function () {
+  const rokInput = document.getElementById("rok");
+  rokInput.addEventListener("focus", function () {
+    if (!this.value) this.value = this.placeholder;
+  });
+  rokInput.addEventListener("input", function () {
     const rok          = parseInt(this.value, 10);
     const jeValidni    = rok >= 1920 && rok <= 2026;
     const detskaMozna  = jeValidni && rok >= 2014;

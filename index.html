@@ -831,13 +831,13 @@ async function odeslat() {
   btn.disabled = true;
   btn.textContent = "Odesílám…";
 
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwl4lQkWa38qaF2Pr07S5QIjEEotbdgmLx74VCdH-uChO5m0E1yu8l3bQcVk3jFY0Gr/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwb146AAngS32czu7Ty7tYLrwBoxYqLHBIFBeweR-x5QNd79-Q_acnhdQGXvJRIJo0/exec";
 
   try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
+    const params = new URLSearchParams(data);
+    await fetch(APPS_SCRIPT_URL + "?" + params.toString(), {
+      method: "GET",
       mode: "no-cors",
-      body: JSON.stringify(data)
     });
     document.getElementById("msg-success").classList.add("visible");
     document.getElementById("msg-error").classList.remove("visible");

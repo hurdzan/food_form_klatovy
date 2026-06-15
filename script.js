@@ -2,11 +2,10 @@
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7IPpvy8f8SjDgqh5yaj0D40e8scw7zf5_Gp2vd8tGFGkQZMKDaEwkcoPPTF52nB95/exec";
 
-const CENA_DOSPELA = 165;
-const CENA_DETSKA  = 130;
-const CENA_POLEVKA = 20;
-
-const POLEVKA_TEXT = "Slepičí vývar s drobením a zeleninou, 0,3 l";
+const CENA_DOSPELA        = 170;
+const CENA_DETSKA         = 135;
+const CENA_POLEVKA_DOSPL  = 25;
+const CENA_POLEVKA_DETSKA = 20;
 
 // ── Data jídel ─────────────────────────────────────────────────────────────
 
@@ -15,110 +14,127 @@ const DNY = [
     id: "so_1", nazev: "Sobota", datum: "27.6.",
     obed: null,
     vecere: [
-      "Kuřecí nudličky Čína, dušená rýže, 120g/300g",
-      "Rybí Fish & Chips, brambory, tatarka, 120g/300g",
-      "Kuřecí stripsy na zeleninovém salátu s dresinkem, opečené bramborové klíny",
+      "Moravský vrabec, zelí, bramborový knedlík",
+      "Smažená kuřecí jehla, vařené brambory, tatarka",
+      "Salát Fitness s kuřecími nudličkami, nivou, červenou řepou, tousty",
+      "VEGE Vegetariánský zeleninový salát s sweet kukuřicí a cherry rajčátky, ciabatta",
     ],
+    polevka: null,
   },
   {
     id: "ne_1", nazev: "Neděle", datum: "28.6.",
     obed: [
-      "Kuřecí řízek, bramborový salát",
-      "Smažený sýr, bramborový salát, tatarka",
-      "Zeleninový výběr, vařené brambory s máslem",
+      "Azzu po tatarsku, bramborový knedlík",
+      "Vepřové ražniči, opečené brambory",
+      "Kuřecí plněná roláda šunka a sýr, dušená rýže /BEZLEPEK/",
     ],
     vecere: [
-      "Svíčková na smetaně, houskový knedlík, brusinky, šlehačka",
-      "Uzené maso, bramborový knedlík, zelí",
-      "Zeleninová čína s tofu, dušená rýže",
+      "Vepřový steak na zeleninovém rizotu",
+      "Grilované kuřecí medailónky se zeleninou, šťouchané brambory",
+      "Mix salátů s pečeným lososem, tousty",
+      "VEGE Tortilla plněná zeleninou a sýrem, mix listových salátů",
     ],
+    polevka: "Slepičí vývar s drobením",
   },
   {
     id: "po", nazev: "Pondělí", datum: "29.6.",
     obed: [
-      "Svíčková na smetaně, houskový knedlík",
-      "Kuřecí steak s bylinkovým máslem, hranolky",
-      "Pasta primavera se zeleninou a parmazánem",
+      "Vepřové výpečky, kysané zelí, houskový knedlík",
+      "Vepřový řízek v sýrovém těstíčku, vařené brambory, tatarka",
+      "Kuřecí nudličky WOK, jasmínová rýže /BEZLEPEK/",
     ],
     vecere: [
-      "Segedínský guláš, houskový knedlík",
-      "Pečená kuřecí stehna, vařené brambory, salát",
-      "Čočka na kyselo, vejce, okurka",
+      "Vepřová panenka na jehle, hranolky",
+      "Kuřecí steak Neapol, gnocchi",
+      "Kuřecí Gyros na ledovém salátu, bageta",
+      "VEGE Salátová variace s vejcem, cizrnou a červenou čočkou, bageta",
     ],
+    polevka: "Hovězí vývar s kapáním",
   },
   {
     id: "ut", nazev: "Úterý", datum: "30.6.",
     obed: [
-      "Špenátové tagliatelle, parmazán",
-      "Kuřecí curry, basmati rýže",
-      "Hamburger s hranolkami a salátem",
+      "Znojemské hovězí nudličky, houskový knedlík",
+      "Grilovaný vepřový steak, restované žampióny s cibulkou, bramborová kaše /BEZLEPEK/",
+      "Vepřová krkovice pečená, dušená mrkev, vařené brambory",
     ],
     vecere: [
-      "Pečené vepřové koleno, bramborová kaše, hořčice",
-      "Grilovaný losos, vařené brambory, salát",
-      "Plněné papriky, rajčatová omáčka, rýže",
+      "Kuřecí medailónky, baby karotka s hráškem, dušená rýže",
+      "Smažený květák, brambory, tatarka",
+      "Salátová variace s kousky smaženého hermelínu a brusinkami, bageta",
+      "Salátová variace s kuřecími kousky Teriyaki, dresinkem a bagetou",
     ],
+    polevka: "Slepičí vývar s nudlemi a zeleninou",
   },
   {
     id: "st", nazev: "Středa", datum: "1.7.",
     obed: [
-      "Smažená kuřecí křídla, coleslaw, hranolky",
-      "Vepřová panenka, houskový knedlík, omáčka",
-      "Quinoa bowl se zeleninou a hummussem",
+      "Vepřový steak na žampiónech, knedlík",
+      "Bramborové knedlíky s uzeným masem, zelí",
+      "Kuřecí plátek se šunkou a sýrem, brambory /BEZLEPEK/",
     ],
     vecere: [
-      "Svíčkový steak, opečené brambory, grilovaná zelenina",
-      "Kuřecí tikka masala, rýže, naan",
-      "Zeleninový guláš, chléb",
+      "Svíčková na smetaně, houskový knedlík",
+      "Kuřecí stripsy, bramborová kaše, zelenina",
+      "VEGE Zeleninový salát s marinovaným balkánským sýrem a olivami, bageta",
+      "Salátová variace s vepřovou panenkou v bylinkovém těstíčku, tmavé tousty",
     ],
+    polevka: "Luštěninová",
   },
   {
     id: "ct", nazev: "Čtvrtek", datum: "2.7.",
     obed: [
-      "Hovězí vývar s nudlemi a zeleninou",
-      "Fazolový hrnec s klobásou, chléb",
-      "Cizrnový salát s olivami a fetou",
+      "Smažený karbanátek, vařené brambory",
+      "Kuřecí steak s mexickými fazolemi",
+      "VEGE Zapečené brambory se zeleninou a mozzarellou, salát",
     ],
     vecere: [
-      "Grilovaná kuřecí prsa, pečené brambory, grilovaná zelenina",
-      "Vepřový řízek přírodní, bramborová kaše",
-      "Ratatouille, čerstvý chléb",
+      "Směs mas se zeleninou, bramboráčky",
+      "Grilovaný vepřový steak, zelenina, brambory",
+      "Těstovinový salát s kuřecím masem a kostičkami anglické slaniny, bageta",
+      "VEGE Taco Salad s listy salátu, červených fazolí, kukuřice, avokáda a dalších, bageta",
     ],
+    polevka: "Kuřecí vývar s rýží a hráškem",
   },
   {
     id: "pa", nazev: "Pátek", datum: "3.7.",
     obed: [
-      "Masové koule v rajčatové omáčce, těstoviny",
-      "Grilovaný losos, basmati rýže",
-      "Sýrové rizoto s hříbky",
+      "Pečené masové koule, houbová smetanová omáčka, špecle",
+      "Smažený kuřecí řízek, bramborová kaše, okurka",
+      "Vepřové nudličky z pečeně ala Španělský ptáček, houskový knedlík",
     ],
     vecere: [
-      "Pečené kuře s česnekem, opečené brambory",
-      "Makrely na grilu, bramborový salát",
-      "Zeleninová pizza",
+      "Kuřecí směs Gurmán, jasmínová rýže",
+      "Vepřové marinované ražniči na jehle, opečené brambory /BEZLEPEK/",
+      "Salát Caesar z ledového salátu s plátky kuřecího prsíčka a krutóny, bageta",
+      "Zeleninový salát Oslo s nugetami z lososa /nemleté/, dresinkem, kaiserka",
     ],
+    polevka: "Kulajda",
   },
   {
     id: "so_2", nazev: "Sobota", datum: "4.7.",
     obed: [
-      "Svíčková na smetaně, houskový knedlík, brusinky",
-      "Kuřecí gyros, tzatziki, pita",
-      "Zeleninová čína s tofu, rýže",
+      "Sedlácká bašta, kysané zelí, mix knedlíků",
+      "Kuřecí nudličky se zeleninou, jasmínová rýže",
+      "Smažené rybí filé, opečené brambory, tatarka",
     ],
     vecere: [
-      "Vepřová žebra BBQ, coleslaw, hranolky",
-      "Zapečená kuřecí prsa s mozzarellou, těstoviny",
-      "Plněné papriky s rýží a fetou",
+      "Vepřové žebírko na slanině, rýže",
+      "Smažené vepřové řízečky, brambory",
+      "Salát SHANGHAI s kuřecím masem, bageta",
+      "VEGE Italský těstovinový salát s Feta sýrem, dresinkem a bagetou",
     ],
+    polevka: "Slepičí s fritátovými nudlemi",
   },
   {
     id: "ne_2", nazev: "Neděle", datum: "5.7.",
     obed: [
-      "Vepřová pečeně, svíčková omáčka, houskový knedlík",
-      "Kuřecí řízek, bramborový salát",
-      "Zeleninový výběr s vařenou rýží",
+      "Vídeňský hovězí guláš, houskový knedlík",
+      "Grilovaný kuřecí steak se slaninou, hranolky",
+      "Mexická tortilla s kuřecími nudličkami a zeleninou, mix listových salátů",
     ],
     vecere: null,
+    polevka: "Hovězí vývar s játrovými knedlíčky",
   },
 ];
 
@@ -150,7 +166,7 @@ function sestavFormular() {
 }
 
 function sestavMealSlot(denId, typ, jidla) {
-  const nazev = typ === "vecere" ? "Večeře" : "Oběd";
+  const nazev = typ === "vecere" ? "Večeře · 18:30–21:00" : "Oběd · 12:00–14:00";
 
   const jidlaHtml = jidla.map((j, i) => `
     <div class="meal-option">
@@ -172,12 +188,14 @@ function sestavMealSlot(denId, typ, jidla) {
     </div>
   `;
 
-  const polevkaHtml = typ === "obed" ? `
+  const den = DNY.find(d => d.id === denId);
+  const polevkaNazev = den?.polevka || null;
+  const polevkaHtml = (typ === "obed" && polevkaNazev) ? `
     <div class="polevka-row disabled" id="polevka-row-${denId}">
       <input type="checkbox" id="polevka_${denId}" name="polevka_${denId}"
              onchange="aktualizujCenu()">
-      <label for="polevka_${denId}">${POLEVKA_TEXT}</label>
-      <span class="polevka-price">+${CENA_POLEVKA} Kč</span>
+      <label for="polevka_${denId}">${polevkaNazev}</label>
+      <span class="polevka-price" id="polevka-price-${denId}">+20 Kč</span>
     </div>
   ` : "";
 
@@ -262,7 +280,9 @@ function aktualizujShrnutiDne(denId) {
 function spoctiCenu() {
   const porceEl = document.querySelector("input[name='porce']:checked");
   if (!porceEl) return 0;
-  const cenaPorce = porceEl.value === "detska" ? CENA_DETSKA : CENA_DOSPELA;
+  const jeDetska    = porceEl.value === "detska";
+  const cenaPorce   = jeDetska ? CENA_DETSKA : CENA_DOSPELA;
+  const cenaPolevky = jeDetska ? CENA_POLEVKA_DETSKA : CENA_POLEVKA_DOSPL;
   let total = 0;
 
   DNY.forEach(den => {
@@ -275,12 +295,22 @@ function spoctiCenu() {
       if (o && o.value) {
         total += cenaPorce;
         const pol = document.getElementById(`polevka_${den.id}`);
-        if (pol && pol.checked) total += CENA_POLEVKA;
+        if (pol && pol.checked) total += cenaPolevky;
       }
     }
   });
 
   return total;
+}
+
+function aktualizujCenyPolevek() {
+  const porceEl = document.querySelector("input[name='porce']:checked");
+  if (!porceEl) return;
+  const cena = porceEl.value === "detska" ? CENA_POLEVKA_DETSKA : CENA_POLEVKA_DOSPL;
+  DNY.forEach(den => {
+    const el = document.getElementById(`polevka-price-${den.id}`);
+    if (el) el.textContent = `+${cena} Kč`;
+  });
 }
 
 function aktualizujCenu() {
@@ -303,13 +333,14 @@ document.addEventListener("DOMContentLoaded", () => {
   rokInput.addEventListener("input", function () {
     const rok          = parseInt(this.value, 10);
     const jeValidni    = rok >= 1920 && rok <= 2026;
-    const detskaMozna  = jeValidni && rok >= 2014;
+    const detskaMozna  = jeValidni && rok >= 2013;
     const radioDospela = document.getElementById("porce-dospela");
     const radioDetska  = document.getElementById("porce-detska");
     const notice       = document.getElementById("porce-notice");
 
     radioDetska.disabled = !detskaMozna;
     if (!detskaMozna && radioDetska.checked) radioDospela.checked = true;
+    aktualizujCenyPolevek();
 
     if (!jeValidni || !this.value) {
       notice.textContent = "";

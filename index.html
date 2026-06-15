@@ -12,9 +12,8 @@
 <header>
   <div class="eyebrow">Výběr stravy</div>
   <h1>OPEN Klatovy 2026</h1>
-  <p>Sobota 27. 6. 2026 – Neděle 5. 7. 2026 </p>
-  <br>
-  <p>Objednávky přijímáme do ...</p>
+    
+  <p>Objednávky přijímáme do středy 24. 6. 21:00</p>
 </header>
 
 <div class="container">
@@ -53,21 +52,21 @@
       <label>Typ porce <span class="req">*</span></label>
       <div class="porce-group">
         <div class="porce-option">
-          <input type="radio" name="porce" id="porce-dospela" value="dospela" onchange="aktualizujCenu()">
+          <input type="radio" name="porce" id="porce-dospela" value="dospela" onchange="aktualizujCenu(); aktualizujCenyPolevek()">
           <label for="porce-dospela">
             <span class="porce-icon">🧑</span>
             Dospělá
             <span class="porce-sub">od 13 let</span>
-            <span class="porce-price">165 Kč / jídlo</span>
+            <span class="porce-price">170 Kč / jídlo</span>
           </label>
         </div>
         <div class="porce-option">
-          <input type="radio" name="porce" id="porce-detska" value="detska" disabled onchange="aktualizujCenu()">
+          <input type="radio" name="porce" id="porce-detska" value="detska" disabled onchange="aktualizujCenu(); aktualizujCenyPolevek()">
           <label for="porce-detska">
             <span class="porce-icon">🧒</span>
             Dětská
             <span class="porce-sub">do 12 let</span>
-            <span class="porce-price">130 Kč / jídlo</span>
+            <span class="porce-price">135 Kč / jídlo</span>
           </label>
         </div>
       </div>
